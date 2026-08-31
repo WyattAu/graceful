@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "graceful"
+name = "graceful-shutdown"
 version = "0.1.0"
 dependencies = [
  "thiserror",
