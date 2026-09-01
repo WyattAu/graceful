@@ -16,8 +16,14 @@ thiserror = "2"
 tracing = "0.1"
 
 [dev-dependencies]
+proptest = "1"
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "signal", "sync", "time"] }
+criterion = { version = "0.5", features = ["html_reports"] }
 
 [features]
 default = ["std"]
 std = []
+
+[[bench]]
+name = "shutdown_bench"
+harness = false
