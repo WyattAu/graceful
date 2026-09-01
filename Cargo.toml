@@ -5,9 +5,10 @@ edition = "2024"
 rust-version = "1.85"
 description = "Graceful shutdown for Rust services — signal handling, connection draining, and RAII cleanup guards"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/WyattAu/graceful"
+repository = "https://github.com/WyattAu/shutdown-kit"
 keywords = ["shutdown", "graceful", "signal", "axum", "tokio"]
 categories = ["asynchronous", "web-programming"]
+exclude = ["/target"]
 
 [dependencies]
 tokio = { version = "1", features = ["rt", "macros", "signal", "sync", "time"] }

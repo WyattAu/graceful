@@ -1,4 +1,4 @@
-# graceful-shutdown
+# shutdown-kit
 
 Graceful shutdown for Rust services — signal handling, connection draining, and RAII cleanup guards.
 

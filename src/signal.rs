@@ -23,8 +23,17 @@ pub async fn shutdown_signal() {
 
     #[cfg(unix)]
     {
-        let mut sigterm = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
-            .expect("failed to install SIGTERM handler");
+        let mut sigterm =
+            match tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate()) {
+                Ok(s) => s,
+                Err(e) => {
+                    tracing::error!("failed to install SIGTERM handler: {e}");
+                    ctrl_c.await.ok();
+                    tracing::info!("received Ctrl+C signal");
+                    let _ = shutdown_sender().send(());
+                    return;
+                }
+            };
 
         tokio::select! {
             _ = ctrl_c => {
@@ -38,8 +47,13 @@ pub async fn shutdown_signal() {
 
     #[cfg(not(unix))]
     {
-        ctrl_c.await.expect("failed to install Ctrl+C handler");
-        tracing::info!("received Ctrl+C signal");
+        match ctrl_c.await {
+            Ok(()) => tracing::info!("received Ctrl+C signal"),
+            Err(e) => {
+                tracing::error!("failed to install Ctrl+C handler: {e}");
+                return;
+            }
+        }
     }
 
     // Broadcast shutdown to all subscribers
