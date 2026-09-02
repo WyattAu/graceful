@@ -23,6 +23,7 @@ criterion = { version = "0.5", features = ["html_reports"] }
 [features]
 default = ["std"]
 std = []
+shutdown-flag = []
 
 [[bench]]
 name = "shutdown_bench"

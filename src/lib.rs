@@ -78,6 +78,10 @@ pub use error::ShutdownError;
 pub use guard::ShutdownGuard;
 pub use signal::shutdown_signal;
 
+/// Feature-gated shutdown flag for lightweight cancellation.
+#[cfg(feature = "shutdown-flag")]
+pub mod flag;
+
 #[cfg(test)]
 mod tests {
     use super::*;
