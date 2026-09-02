@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use tokio::sync::broadcast;
 
 /// A broadcast sender used to coordinate shutdown across tasks.
@@ -64,6 +62,7 @@ pub async fn shutdown_signal() {
 ///
 /// Returns a `broadcast::Receiver<()>` that will receive a value when
 /// shutdown is triggered.
+#[allow(dead_code)]
 pub fn subscribe_shutdown() -> broadcast::Receiver<()> {
     shutdown_sender().subscribe()
 }
@@ -71,6 +70,7 @@ pub fn subscribe_shutdown() -> broadcast::Receiver<()> {
 /// Trigger a manual shutdown.
 ///
 /// This broadcasts a shutdown signal to all subscribers.
+#[allow(dead_code)]
 pub fn trigger_shutdown() {
     let _ = shutdown_sender().send(());
 }

@@ -1,4 +1,4 @@
-use criterion::{criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, criterion_group, criterion_main};
 use shutdown_kit::ShutdownConfig;
 use shutdown_kit::ShutdownGuard;
 use std::time::Duration;
