@@ -9,7 +9,7 @@
 //! ## Quick Start
 //!
 //! ```rust,no_run
-//! use graceful::{ShutdownGuard, shutdown_signal};
+//! use shutdown_kit::{ShutdownGuard, shutdown_signal};
 //!
 //! #[tokio::main]
 //! async fn main() {
@@ -35,9 +35,10 @@
 //!
 //! ## Axum Integration
 //!
-//! ```rust,no_run
+//! ```ignore
+//! // Requires adding `axum` to your own crate; shown for illustration.
 //! use axum::Router;
-//! use graceful::{ShutdownGuard, shutdown_signal, ShutdownConfig};
+//! use shutdown_kit::{ShutdownGuard, shutdown_signal, ShutdownConfig};
 //!
 //! #[tokio::main]
 //! async fn main() {

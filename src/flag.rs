@@ -1,7 +1,7 @@
 use std::future::Future;
 use std::pin::Pin;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::task::{Context, Poll};
 
 use tokio::sync::Notify;
@@ -134,12 +134,15 @@ impl<'a> Future for ShutdownFuture<'a> {
 /// ```rust,no_run
 /// use shutdown_kit::{select_with_shutdown, flag::ShutdownFlag};
 ///
+/// # async fn example() {
+/// # async fn some_async_op() -> Option<u32> { Some(42) }
 /// let flag = ShutdownFlag::new();
 /// select_with_shutdown!(flag, {
 ///     result = some_async_op() => {
 ///         println!("got result: {:?}", result);
 ///     }
 /// });
+/// # }
 /// ```
 #[macro_export]
 macro_rules! select_with_shutdown {
