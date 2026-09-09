@@ -28,3 +28,7 @@ shutdown-flag = []
 [[bench]]
 name = "shutdown_bench"
 harness = false
+
+[lints.clippy]
+unwrap_used = "warn"
+expect_used = "warn"
