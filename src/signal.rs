@@ -14,24 +14,32 @@ fn shutdown_sender() -> broadcast::Sender<()> {
 
 /// Wait for a shutdown signal (Ctrl+C on all platforms, SIGTERM on Unix).
 ///
-/// This function listens for OS signals and broadcasts a shutdown notification
-/// to all waiting tasks.
+/// This function listens for OS signals and broadcasts a shutdown
+/// notification to all waiting tasks.
+///
+/// If a signal handler cannot be installed (e.g. under a restrictive
+/// seccomp profile), the process would otherwise die on SIGTERM with no
+/// graceful path. Rather than leaving [`subscribe_shutdown`] waiters
+/// hanging forever, the handler-install failure is logged and shutdown is
+/// triggered immediately — services exit cleanly and the supervisor can
+/// restart them.
 pub async fn shutdown_signal() {
     let ctrl_c = tokio::signal::ctrl_c();
 
     #[cfg(unix)]
     {
-        let mut sigterm =
-            match tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate()) {
-                Ok(s) => s,
-                Err(e) => {
-                    tracing::error!("failed to install SIGTERM handler: {e}");
-                    ctrl_c.await.ok();
-                    tracing::info!("received Ctrl+C signal");
-                    let _ = shutdown_sender().send(());
-                    return;
-                }
-            };
+        let mut sigterm = match tokio::signal::unix::signal(
+            tokio::signal::unix::SignalKind::terminate(),
+        ) {
+            Ok(s) => s,
+            Err(e) => {
+                tracing::error!(
+                    "failed to install SIGTERM handler ({e}); triggering immediate shutdown so waiters are not left hanging"
+                );
+                let _ = shutdown_sender().send(());
+                return;
+            }
+        };
 
         tokio::select! {
             _ = ctrl_c => {
@@ -48,7 +56,10 @@ pub async fn shutdown_signal() {
         match ctrl_c.await {
             Ok(()) => tracing::info!("received Ctrl+C signal"),
             Err(e) => {
-                tracing::error!("failed to install Ctrl+C handler: {e}");
+                tracing::error!(
+                    "failed to install Ctrl+C handler ({e}); triggering immediate shutdown so waiters are not left hanging"
+                );
+                let _ = shutdown_sender().send(());
                 return;
             }
         }
@@ -62,7 +73,6 @@ pub async fn shutdown_signal() {
 ///
 /// Returns a `broadcast::Receiver<()>` that will receive a value when
 /// shutdown is triggered.
-#[allow(dead_code)]
 pub fn subscribe_shutdown() -> broadcast::Receiver<()> {
     shutdown_sender().subscribe()
 }
@@ -70,7 +80,6 @@ pub fn subscribe_shutdown() -> broadcast::Receiver<()> {
 /// Trigger a manual shutdown.
 ///
 /// This broadcasts a shutdown signal to all subscribers.
-#[allow(dead_code)]
 pub fn trigger_shutdown() {
     let _ = shutdown_sender().send(());
 }

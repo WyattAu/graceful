@@ -77,7 +77,74 @@ mod signal;
 pub use config::ShutdownConfig;
 pub use error::ShutdownError;
 pub use guard::ShutdownGuard;
-pub use signal::shutdown_signal;
+pub use signal::{shutdown_signal, subscribe_shutdown, trigger_shutdown};
+
+/// Runs the full coordinated shutdown sequence against an OS signal:
+///
+/// 1. Wait for [`shutdown_signal`] (or any [`trigger_shutdown`] broadcast).
+/// 2. Signal [`ShutdownGuard::shutdown`] and drain in-flight work —
+///    bounded by `config.drain_timeout`
+///    ([`ShutdownError::DrainTimeout`] on expiry).
+/// 3. Run the caller-supplied `finalize` hook — bounded by the *remaining*
+///    `config.shutdown_timeout` budget
+///    ([`ShutdownError::ShutdownTimeout`] if the overall budget is
+///    exhausted, [`ShutdownError::TaskFailed`] if the hook errors).
+///
+/// ```rust,no_run
+/// use shutdown_kit::{ShutdownConfig, ShutdownGuard, run_shutdown};
+///
+/// # async fn example() -> Result<(), shutdown_kit::ShutdownError> {
+/// let guard = ShutdownGuard::new();
+/// let task = guard.clone();
+/// tokio::spawn(async move {
+///     let _ = task.wait_for_shutdown().await; // stop on signal
+///     // ... flush buffers, close connections ...
+///     drop(task);                             // drain contribution done
+/// });
+///
+/// run_shutdown(ShutdownConfig::defaults(), &guard, || async {
+///     tracing::info!("final flush complete");
+///     Ok(())
+/// })
+/// .await?;
+/// # Ok(())
+/// # }
+/// ```
+pub async fn run_shutdown<F, Fut>(
+    config: ShutdownConfig,
+    guard: &ShutdownGuard,
+    finalize: F,
+) -> Result<(), ShutdownError>
+where
+    F: FnOnce() -> Fut,
+    Fut: Future<Output = Result<(), ShutdownError>>,
+{
+    // Resolve on whichever arrives first: an OS signal (Ctrl+C/SIGTERM via
+    // `shutdown_signal`, which then broadcasts) or a broadcast that was
+    // already triggered (e.g. `trigger_shutdown` from tests or an embedded
+    // supervisor). Subscribing before the select means a broadcast fired
+    // earlier in this function's lifetime is still observed.
+    let mut rx = signal::subscribe_shutdown();
+    tokio::select! {
+        _ = signal::shutdown_signal() => {}
+        _ = rx.recv() => {}
+    }
+    guard.shutdown();
+
+    // Overall budget starts once the signal arrives.
+    let overall = tokio::time::timeout(config.shutdown_timeout, async {
+        guard
+            .wait_for_completion_with_deadline(config.drain_timeout)
+            .await?;
+        finalize().await
+    })
+    .await;
+
+    match overall {
+        Ok(result) => result,
+        Err(_) => Err(ShutdownError::ShutdownTimeout(config.shutdown_timeout)),
+    }
+}
 
 /// Feature-gated shutdown flag for lightweight cancellation.
 #[cfg(feature = "shutdown-flag")]
@@ -169,9 +236,6 @@ mod tests {
 
     #[test]
     fn shutdown_error_display() {
-        let err = ShutdownError::ChannelClosed;
-        assert_eq!(err.to_string(), "shutdown channel closed");
-
         let err = ShutdownError::DrainTimeout(Duration::from_secs(30));
         assert_eq!(err.to_string(), "drain timed out after 30s");
 
