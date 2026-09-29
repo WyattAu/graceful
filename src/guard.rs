@@ -67,6 +67,30 @@ impl ShutdownGuard {
         self.inner.flag_tx.subscribe()
     }
 
+    /// Returns a `CancellationToken` cancelled when this guard observes
+    /// shutdown (explicitly, via the drop safety net, or via
+    /// [`trigger_shutdown`](crate::trigger_shutdown) broadcasts reaching a
+    /// linked subscriber — see [`run_shutdown`]).
+    ///
+    /// The bridge task lives until shutdown fires; a service-process
+    /// lifetime is the intended scope. Must be called within a tokio
+    /// runtime (`tokio::spawn`).
+    ///
+    /// This is the estate's adoption bridge for token-standardised crates:
+    /// hand the token to `CancellationToken`-native code (kestrel-class)
+    /// while this crate owns the shutdown decision.
+    #[cfg(feature = "tokio-util")]
+    pub fn cancellation_token(&self) -> tokio_util::sync::CancellationToken {
+        let token = tokio_util::sync::CancellationToken::new();
+        let linked = token.clone();
+        let mut rx = self.watch_receiver();
+        tokio::spawn(async move {
+            let _ = rx.wait_for(|signaled| *signaled).await;
+            linked.cancel();
+        });
+        token
+    }
+
     /// Wait for shutdown to be signaled.
     ///
     /// Event-driven: returns immediately once signaled, with no polling

@@ -1,6 +1,6 @@
 [package]
 name = "shutdown-kit"
-version = "0.3.0"
+version = "0.3.2"
 edition = "2024"
 rust-version = "1.85"
 description = "Graceful shutdown for Rust services — signal handling, connection draining, and RAII cleanup guards"
@@ -14,6 +14,7 @@ exclude = ["/target"]
 tokio = { version = "1", features = ["rt", "macros", "signal", "sync", "time"] }
 thiserror = "2"
 tracing = "0.1"
+tokio-util = { version = "0.7", optional = true }
 
 [dev-dependencies]
 proptest = "1"
@@ -21,6 +22,10 @@ tokio = { version = "1", features = ["rt-multi-thread", "macros", "signal", "syn
 criterion = { version = "0.5", features = ["html_reports"] }
 
 [features]
+# `CancellationToken` bridge for estates standardised on
+# `tokio_util::sync::CancellationToken` (kestrel-class consumers).
+tokio-util = ["dep:tokio-util"]
+
 default = ["std"]
 std = []
 shutdown-flag = []

@@ -309,6 +309,7 @@ async fn dropping_the_very_last_clone_signals_shutdown() {
 #[tokio::test]
 async fn run_shutdown_drains_and_finalizes() {
     use shutdown_kit::{ShutdownConfig, run_shutdown};
+
     use std::sync::Arc;
     use std::sync::atomic::{AtomicBool, Ordering};
 
@@ -374,4 +375,51 @@ async fn run_shutdown_reports_task_failure() {
 
     let err = result.expect_err("finalize hook failed");
     assert!(matches!(err, ShutdownError::TaskFailed(msg) if msg.contains("flush failed")));
+}
+
+// ── 0.3.2: CancellationToken bridge (feature tokio-util) ───────────────
+
+#[cfg(feature = "tokio-util")]
+#[tokio::test]
+async fn cancellation_token_is_cancelled_when_shutdown_signals() {
+    use std::time::Duration;
+
+    let guard = ShutdownGuard::new();
+    let linked = guard.cancellation_token();
+
+    let g = guard.clone();
+    tokio::spawn(async move {
+        tokio::time::sleep(Duration::from_millis(30)).await;
+        g.shutdown(); // explicit signal — the bridge's cancelling event
+    });
+
+    let cancelled = tokio::time::timeout(Duration::from_secs(2), async {
+        while !linked.is_cancelled() {
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+    })
+    .await;
+    assert!(
+        cancelled.is_ok(),
+        "linked token must cancel when shutdown signals"
+    );
+}
+
+#[cfg(feature = "tokio-util")]
+#[tokio::test]
+async fn cancellation_token_survives_until_safety_net() {
+    use std::time::Duration;
+
+    let guard = ShutdownGuard::new();
+    let token = guard.cancellation_token();
+    assert!(!token.is_cancelled());
+
+    drop(guard); // last clone dropped → safety-net shutdown signal
+    let cancelled = tokio::time::timeout(Duration::from_secs(2), async {
+        while !token.is_cancelled() {
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+    })
+    .await;
+    assert!(cancelled.is_ok(), "safety net must cancel the linked token");
 }

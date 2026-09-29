@@ -3,6 +3,19 @@
 All notable changes are documented here. Format: [Keep a
 Changelog](https://keepachangelog.com/) — versions follow [semver](https://semver.org).
 
+## [0.3.2] - 2026-09-29
+
+### Added
+- `ShutdownGuard::cancellation_token()` (feature `tokio-util`) — the
+  estate's adoption bridge for `CancellationToken`-standardised crates:
+  the returned token cancels when the guard observes shutdown, letting
+  token-native code coexist with shutdown-kit's decision ownership.
+  Documented lifetime: the bridge task lives until shutdown fires.
+
+### Changed
+- `tokio-util` is now an optional dependency behind the `tokio-util`
+  feature (default off — no new deps for existing consumers).
+
 ## [0.3.0] - 2026-09-15
 
 ### Fixed
