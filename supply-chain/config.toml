@@ -118,7 +118,7 @@ criteria = "safe-to-run"
 
 [[exemptions.futures-core]]
 version = "0.3.34"
-criteria = "safe-to-run"
+criteria = "safe-to-deploy"
 
 [[exemptions.futures-sink]]
 version = "0.3.34"
@@ -379,7 +379,7 @@ version = "0.1.4"
 criteria = "safe-to-run"
 
 [[exemptions.unicode-ident]]
-version = "1.0.24"
+version = "1.0.26"
 criteria = "safe-to-deploy"
 
 [[exemptions.wait-timeout]]
@@ -399,23 +399,23 @@ version = "1.0.1+wasi-0.2.4"
 criteria = "safe-to-run"
 
 [[exemptions.wasm-bindgen]]
-version = "0.2.127"
+version = "0.2.129"
 criteria = "safe-to-run"
 
 [[exemptions.wasm-bindgen-macro]]
-version = "0.2.127"
+version = "0.2.129"
 criteria = "safe-to-run"
 
 [[exemptions.wasm-bindgen-macro-support]]
-version = "0.2.127"
+version = "0.2.129"
 criteria = "safe-to-run"
 
 [[exemptions.wasm-bindgen-shared]]
-version = "0.2.127"
+version = "0.2.129"
 criteria = "safe-to-run"
 
 [[exemptions.web-sys]]
-version = "0.3.104"
+version = "0.3.106"
 criteria = "safe-to-run"
 
 [[exemptions.winapi-util]]
