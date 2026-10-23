@@ -1,11 +1,11 @@
-# Threat Model — graceful
+# Threat Model: graceful
 
 Reference: STRIDE. Scope: the crate's public API surface. Trust boundary:
 (1) bytes/inputs entering public constructors and parsers, (2) concurrent
-callers sharing interior state. graceful is an in-process library — it opens
+callers sharing interior state. graceful is an in-process library: it opens
 no sockets and inherits the embedding process's trust domain.
 
-Purpose: Shutdown coordination (`shutdown-kit`) — graceful drain with deadlines and shutdown reasons
+Purpose: Shutdown coordination (`shutdown-kit`): graceful drain with deadlines and shutdown reasons
 
 ## Assets
 

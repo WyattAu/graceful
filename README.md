@@ -1,6 +1,6 @@
 # shutdown-kit
 
-Graceful shutdown for Rust services — signal handling, connection draining, and RAII cleanup guards.
+Graceful shutdown for Rust services: signal handling, connection draining, and RAII cleanup guards.
 
 [![Crates.io](https://img.shields.io/crates/v/graceful.svg)](https://crates.io/crates/graceful)
 [![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](./LICENSE-MIT)
@@ -11,11 +11,11 @@ Graceful shutdown for Rust services — signal handling, connection draining, an
 
 ## Features
 
-- **Signal handling** — Ctrl+C (all platforms) and SIGTERM (Unix)
-- **RAII guards** — automatic shutdown tracking via `ShutdownGuard`
-- **Configurable timeouts** — drain and shutdown timeout configuration
-- **Broadcast-based** — multiple tasks can subscribe to shutdown signals
-- **No unsafe code** — `#![forbid(unsafe_code)]`
+- **Signal handling**: Ctrl+C (all platforms) and SIGTERM (Unix)
+- **RAII guards**: automatic shutdown tracking via `ShutdownGuard`
+- **Configurable timeouts**: drain and shutdown timeout configuration
+- **Broadcast-based**: multiple tasks can subscribe to shutdown signals
+- **No unsafe code**: `#![forbid(unsafe_code)]`
 
 ## Usage
 

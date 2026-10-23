@@ -1,9 +1,9 @@
-# Requirements — graceful
+# Requirements: graceful
 
 Numbered, testable requirements. Every requirement maps to at least one named
 test or doc-comment contract; security-relevant items cite threat-model rows.
 
-Scope: Shutdown coordination (`shutdown-kit`) — graceful drain with deadlines and shutdown reasons
+Scope: Shutdown coordination (`shutdown-kit`): graceful drain with deadlines and shutdown reasons
 
 ## Functional
 
