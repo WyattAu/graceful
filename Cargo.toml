@@ -1,9 +1,9 @@
 [package]
 name = "shutdown-kit"
-version = "0.3.2"
+version = "0.3.3"
 edition = "2024"
 rust-version = "1.85"
-description = "Graceful shutdown for Rust services — signal handling, connection draining, and RAII cleanup guards"
+description = "Graceful shutdown for Rust services: signal handling, connection draining, and RAII cleanup guards"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/WyattAu/shutdown-kit"
 keywords = ["shutdown", "graceful", "signal", "axum", "tokio"]
