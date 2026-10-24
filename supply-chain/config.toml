@@ -85,6 +85,10 @@ criteria = "safe-to-run"
 version = "1.18.0"
 criteria = "safe-to-run"
 
+[[exemptions.either]]
+version = "1.19.0"
+criteria = "safe-to-run"
+
 [[exemptions.fastrand]]
 version = "2.5.0"
 criteria = "safe-to-run"
@@ -138,6 +142,10 @@ criteria = "safe-to-run"
 version = "0.2.189"
 criteria = "safe-to-deploy"
 
+[[exemptions.libc]]
+version = "0.2.191"
+criteria = "safe-to-deploy"
+
 [[exemptions.linux-raw-sys]]
 version = "0.12.1"
 criteria = "safe-to-run"
@@ -148,6 +156,10 @@ criteria = "safe-to-run"
 
 [[exemptions.mio]]
 version = "1.2.3"
+criteria = "safe-to-deploy"
+
+[[exemptions.mio]]
+version = "1.2.4"
 criteria = "safe-to-deploy"
 
 [[exemptions.once_cell]]
@@ -262,8 +274,16 @@ criteria = "safe-to-run"
 version = "1.0.151"
 criteria = "safe-to-run"
 
+[[exemptions.serde_json]]
+version = "1.0.154"
+criteria = "safe-to-run"
+
 [[exemptions.shutdown-kit]]
 version = "0.3.2"
+criteria = "safe-to-deploy"
+
+[[exemptions.shutdown-kit]]
+version = "0.3.3"
 criteria = "safe-to-deploy"
 
 [[exemptions.signal-hook-registry]]
@@ -282,6 +302,10 @@ criteria = "safe-to-deploy"
 version = "3.0.6"
 criteria = "safe-to-deploy"
 notes = "Runtime (worker closure derive). Fresh release; peer certs pending."
+
+[[exemptions.syn]]
+version = "3.0.9"
+criteria = "safe-to-deploy"
 
 [[exemptions.tempfile]]
 version = "3.27.0"
@@ -315,6 +339,10 @@ criteria = "safe-to-deploy"
 version = "0.7.19"
 criteria = "safe-to-deploy"
 
+[[exemptions.tokio-util]]
+version = "0.7.20"
+criteria = "safe-to-deploy"
+
 [[exemptions.tracing]]
 version = "0.1.44"
 criteria = "safe-to-deploy"
@@ -325,6 +353,10 @@ criteria = "safe-to-deploy"
 
 [[exemptions.unicode-ident]]
 version = "1.0.26"
+criteria = "safe-to-deploy"
+
+[[exemptions.unicode-ident]]
+version = "1.0.27"
 criteria = "safe-to-deploy"
 
 [[exemptions.wait-timeout]]
@@ -371,8 +403,16 @@ criteria = "safe-to-deploy"
 version = "0.8.59"
 criteria = "safe-to-run"
 
+[[exemptions.zerocopy]]
+version = "0.8.63"
+criteria = "safe-to-run"
+
 [[exemptions.zerocopy-derive]]
 version = "0.8.59"
+criteria = "safe-to-run"
+
+[[exemptions.zerocopy-derive]]
+version = "0.8.63"
 criteria = "safe-to-run"
 
 [[exemptions.zmij]]
