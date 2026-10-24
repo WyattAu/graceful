@@ -1,4 +1,5 @@
 # shutdown-kit
+[![Estate integration](https://github.com/WyattAu/estate-integration/actions/workflows/ci.yml/badge.svg)](https://github.com/WyattAu/estate-integration/actions/workflows/ci.yml)
 
 Graceful shutdown for Rust services: signal handling, connection draining, and RAII cleanup guards.
 
